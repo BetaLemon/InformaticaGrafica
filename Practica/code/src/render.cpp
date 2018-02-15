@@ -28,8 +28,15 @@ namespace Cube {
 	void drawCube();
 }
 
+namespace MyFirstShader {
+	GLuint myShaderCompile(void);
+	void myInitCode(void);
+	void myRenderCode(double currentTime);
+	void myCleanupCode(void);
 
-
+	GLuint myRenderProgram; // Index of the compiled program to execute it later on.
+	GLuint myVAO;
+}
 
 
 
@@ -139,7 +146,16 @@ void GLrender(double currentTime) {
 	Axis::drawAxis();
 	Cube::drawCube();*/
 
-
+	const GLfloat color[] = { (float)sin(currentTime)*0.5 + 0.5, (float)cos(currentTime)*0.5 + 0.5, 0.0f, 1.0f };
+	// Si volem que la targeta gràfica faci coses, hem de ficar-les en els seus buffers.
+	glClearBufferfv(GL_COLOR, 0, color);	// El buffer GL_COLOR volem que tingui el valor 'red'.
+	/* void glClearBufferfv(GL_ENUM buffer, GLint drawBuffer, const GLfloat * value);
+		- f i v volen dir: float i vector (que per defecte és de 4).
+			-> això és degut a que OpenGL és semblant a C, però no té punters. A més no té funcions que tinguin diferents definicions però el mateix nom.
+		- buffer defineix el tipus de buffer.
+		- drawBuffer defineix quin buffer del tipus definit volem (si només en gastem un, doncs 0).
+		- value (float o vector)
+	*/
 
 	ImGui::Render();
 }
@@ -987,4 +1003,37 @@ void main() {\n\
 	}
 
 
+}
+
+////////////////////////////////////////////////// My First Shader
+namespace MyFirstShader {
+	// 1. Define the shader source code
+
+	static const GLchar * vertex_shader_source[] = 
+	{
+		"#version 330\n\
+		 \n\
+		 void main(){ \n\
+			gl_Position = vec4(0.0, 0.0, 0.5, 1.0);\n\
+		 }"
+	};
+
+	// 2. Compile and link the shaders
+	GLuint myShaderCompile(void) {	// ficar void és lo mateix que no ficar res.
+
+	}
+
+	// 3. Init Function
+	void myInitCode(void){
+
+	}
+	// 4. Render function
+	void myRenderCode(double currentTime) {
+
+	}
+
+	// 5. Cleanup function
+	void myCleanupCode(void) {
+
+	}
 }

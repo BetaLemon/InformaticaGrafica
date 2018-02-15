@@ -9,3 +9,10 @@
 #include "GL_framework.h"
 
 
+/* TOT EL CODI DE LA ENTREGA DE INFORMÀTICA GRÀFICA AQUÍ. */
+
+//myInitCode();
+
+//myRenderCode(currentTime);
+
+//myCleanupCode();

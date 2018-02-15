@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
 
 
 		double currentTime = (double)SDL_GetTicks() / 1000.0;
-		GLrender(currentTime);
+		GLrender(currentTime);	// Inicialització de OpenGL.
 		
 		//double currentTime = (double) SDL_GetTicks() / 1000.0;
 		//myRenderCode(currentTime);
