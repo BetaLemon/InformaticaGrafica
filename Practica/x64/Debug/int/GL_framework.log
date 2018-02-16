@@ -1,7 +1,9 @@
 ﻿  render.cpp
-c:\users\aweiland\desktop\glframework_starthere\code\src\render.cpp(145): warning C4838: conversion from 'double' to 'const GLfloat' requires a narrowing conversion
-c:\users\aweiland\desktop\glframework_starthere\code\src\render.cpp(145): warning C4244: 'initializing': conversion from 'double' to 'const GLfloat', possible loss of data
-  GL_framework.vcxproj -> C:\Users\aweiland\Desktop\glframework_starthere\x64\Debug\GL_framework.exe
-  GL_framework.vcxproj -> C:\Users\aweiland\Desktop\glframework_starthere\x64\Debug\GL_framework.pdb (Partial PDB)
+c:\users\aweiland\desktop\informaticagrafica\practica\code\src\render.cpp(141): warning C4838: conversion from 'double' to 'const GLfloat' requires a narrowing conversion
+c:\users\aweiland\desktop\informaticagrafica\practica\code\src\render.cpp(141): warning C4244: 'initializing': conversion from 'double' to 'const GLfloat', possible loss of data
+c:\users\aweiland\desktop\informaticagrafica\practica\code\src\render.cpp(1062): warning C4838: conversion from 'double' to 'const GLfloat' requires a narrowing conversion
+c:\users\aweiland\desktop\informaticagrafica\practica\code\src\render.cpp(1062): warning C4244: 'initializing': conversion from 'double' to 'const GLfloat', possible loss of data
+  GL_framework.vcxproj -> C:\Users\aweiland\Desktop\InformaticaGrafica\Practica\x64\Debug\GL_framework.exe
+  GL_framework.vcxproj -> C:\Users\aweiland\Desktop\InformaticaGrafica\Practica\x64\Debug\GL_framework.pdb (Partial PDB)
   0 File(s) copied
   0 File(s) copied

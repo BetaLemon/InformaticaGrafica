@@ -111,15 +111,7 @@ void GLinit(int width, int height) {
 	Axis::setupAxis();
 	Cube::setupCube();*/
 
-
-
-
-
-
-
-
-
-
+	MyFirstShader::myInitCode();
 }
 
 void GLcleanup() {
@@ -128,7 +120,7 @@ void GLcleanup() {
 	Cube::cleanupCube();
 */
 
-
+	MyFirstShader::myCleanupCode();
 }
 
 void GLrender(double currentTime) {
@@ -156,6 +148,10 @@ void GLrender(double currentTime) {
 		- drawBuffer defineix quin buffer del tipus definit volem (si només en gastem un, doncs 0).
 		- value (float o vector)
 	*/
+
+	glPointSize(40.0f);
+
+	MyFirstShader::myRenderCode(currentTime);
 
 	ImGui::Render();
 }
@@ -1018,22 +1014,61 @@ namespace MyFirstShader {
 		 }"
 	};
 
+	static const GLchar * fragment_shader_source[] =
+	{
+		"#version 330\n\
+		\n\
+		out vec4 color;\n\
+		\n\
+		void main(){\n\
+			color = vec4(0.0, 0.8, 1.0, 1.0);\n\
+		}"
+	};
+
 	// 2. Compile and link the shaders
 	GLuint myShaderCompile(void) {	// ficar void és lo mateix que no ficar res.
+		GLuint vertex_shader;
+		GLuint fragment_shader;
+		GLuint program;
 
+		vertex_shader = glCreateShader(GL_VERTEX_SHADER);				// Creem un vertex shader.
+		glShaderSource(vertex_shader, 1, vertex_shader_source, NULL);	// Linkem el codi amb el shader.
+		glCompileShader(vertex_shader);									// Compilem el codi.
+
+		fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);				// Creem un fragment shader.
+		glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);	// Linkem el codi amb el shader.
+		glCompileShader(fragment_shader);									// Compilem el codi.
+
+		program = glCreateProgram();				// Creem un programa.
+		glAttachShader(program, vertex_shader);		// Enganxem el vertex shader al programa.
+		glAttachShader(program, fragment_shader);	// Enganxem el fragment shader al programa.
+		glLinkProgram(program);						// Linkem el programa.
+
+		glDeleteShader(vertex_shader);				// Ja no necessitem el vertex shader. L'esborrem.
+		glDeleteShader(fragment_shader);			// Ja no necessitem el fragment shader. L'esborrem.
+
+		return program;
 	}
 
 	// 3. Init Function
 	void myInitCode(void){
-
+		myRenderProgram = myShaderCompile();
+		glCreateVertexArrays(1, &myVAO);
+		glBindVertexArray(myVAO);
 	}
+
 	// 4. Render function
 	void myRenderCode(double currentTime) {
+		const GLfloat color[] = { (float)sin(currentTime)*0.5 + 0.5, (float)cos(currentTime)*0.5 + 0.5, 0.0f, 1.0f };
+		glClearBufferfv(GL_COLOR, 0, color);
 
+		glUseProgram(myRenderProgram);
+		glDrawArrays(GL_POINTS, 0, 1);
 	}
 
 	// 5. Cleanup function
 	void myCleanupCode(void) {
-
+		glDeleteVertexArrays(1, &myVAO);
+		glDeleteProgram(myRenderProgram);
 	}
 }
