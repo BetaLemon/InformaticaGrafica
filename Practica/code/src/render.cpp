@@ -111,7 +111,8 @@ void GLinit(int width, int height) {
 	Axis::setupAxis();
 	Cube::setupCube();*/
 
-	MyFirstShader::myInitCode();
+	//MyFirstShader::myInitCode();
+	Cube::setupCube();
 }
 
 void GLcleanup() {
@@ -120,7 +121,8 @@ void GLcleanup() {
 	Cube::cleanupCube();
 */
 
-	MyFirstShader::myCleanupCode();
+	//MyFirstShader::myCleanupCode();
+	Cube::cleanupCube();
 }
 
 void GLrender(double currentTime) {
@@ -138,9 +140,9 @@ void GLrender(double currentTime) {
 	Axis::drawAxis();
 	Cube::drawCube();*/
 
-	const GLfloat color[] = { (float)sin(currentTime)*0.5 + 0.5, (float)cos(currentTime)*0.5 + 0.5, 0.0f, 1.0f };
+	//const GLfloat color[] = { (float)sin(currentTime)*0.5 + 0.5, (float)cos(currentTime)*0.5 + 0.5, 0.0f, 1.0f };
 	// Si volem que la targeta gràfica faci coses, hem de ficar-les en els seus buffers.
-	glClearBufferfv(GL_COLOR, 0, color);	// El buffer GL_COLOR volem que tingui el valor 'red'.
+	//glClearBufferfv(GL_COLOR, 0, color);	// El buffer GL_COLOR volem que tingui el valor 'red'.
 	/* void glClearBufferfv(GL_ENUM buffer, GLint drawBuffer, const GLfloat * value);
 		- f i v volen dir: float i vector (que per defecte és de 4).
 			-> això és degut a que OpenGL és semblant a C, però no té punters. A més no té funcions que tinguin diferents definicions però el mateix nom.
@@ -149,9 +151,10 @@ void GLrender(double currentTime) {
 		- value (float o vector)
 	*/
 
-	glPointSize(40.0f);
+	//glPointSize(40.0f);
 
-	MyFirstShader::myRenderCode(currentTime);
+	//MyFirstShader::myRenderCode(currentTime);
+	Cube::drawCube();
 
 	ImGui::Render();
 }
@@ -1005,14 +1008,14 @@ void main() {\n\
 namespace MyFirstShader {
 	// 1. Define the shader source code
 
-	static const GLchar * vertex_shader_source[] = 
+	static const GLchar * vertex_shader_source[] =	// Atenció: segons l'ordre que definim els punts, definim la normal del triangle (sempre en sentit anti-horari per a veure).
 	{
 		"#version 330\n\
 		 \n\
 		 void main(){ \n\
 			const vec4 vertices[3] = vec4[3](vec4( 0.25, -0.25, 0.5, 1.0),\n\
-											vec4(-0.25, -0.25, 0.5, 1.0),\n\
-											vec4( 0.25,  0.25, 0.5, 1.0));\n\
+											vec4( 0.25, 0.25, 0.5, 1.0),\n\
+											vec4( -0.25,  -0.25, 0.5, 1.0));\n\
 			gl_Position = vertices[gl_VertexID];\n\
 		 }"
 	};
@@ -1066,7 +1069,7 @@ namespace MyFirstShader {
 		glClearBufferfv(GL_COLOR, 0, color);
 
 		glUseProgram(myRenderProgram);
-		glDrawArrays(GL_LINE_LOOP, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 
 	// 5. Cleanup function
