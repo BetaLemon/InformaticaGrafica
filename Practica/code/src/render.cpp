@@ -1066,7 +1066,7 @@ namespace MyFirstShader {
 		glClearBufferfv(GL_COLOR, 0, color);
 
 		glUseProgram(myRenderProgram);
-		glDrawArrays(GL_POINTS, 0, 3);
+		glDrawArrays(GL_LINE_LOOP, 0, 3);
 	}
 
 	// 5. Cleanup function
