@@ -1010,7 +1010,10 @@ namespace MyFirstShader {
 		"#version 330\n\
 		 \n\
 		 void main(){ \n\
-			gl_Position = vec4(0.0, 0.0, 0.5, 1.0);\n\
+			const vec4 vertices[3] = vec4[3](vec4( 0.25, -0.25, 0.5, 1.0),\n\
+											vec4(-0.25, -0.25, 0.5, 1.0),\n\
+											vec4( 0.25,  0.25, 0.5, 1.0));\n\
+			gl_Position = vertices[gl_VertexID];\n\
 		 }"
 	};
 
@@ -1063,7 +1066,7 @@ namespace MyFirstShader {
 		glClearBufferfv(GL_COLOR, 0, color);
 
 		glUseProgram(myRenderProgram);
-		glDrawArrays(GL_POINTS, 0, 1);
+		glDrawArrays(GL_POINTS, 0, 3);
 	}
 
 	// 5. Cleanup function
