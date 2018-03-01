@@ -26,6 +26,7 @@ namespace Cube {
 	void cleanupCube();
 	void updateCube(const glm::mat4& transform);
 	void drawCube();
+	void draw2Cubes(double currentTime);
 }
 
 namespace MyFirstShader {
@@ -37,8 +38,6 @@ namespace MyFirstShader {
 	GLuint myRenderProgram; // Index of the compiled program to execute it later on.
 	GLuint myVAO;
 }
-
-
 
 ////////////////
 
@@ -104,12 +103,18 @@ void GLinit(int width, int height) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	RV::_projection = glm::perspective(RV::FOV, (float)width/(float)height, RV::zNear, RV::zFar);
+	// PERSPECTIVE PROJECTION:
+	RV::_projection = glm::perspective(RV::FOV, (float)width/(float)height, RV::zNear, RV::zFar);	// Enlloc de ficar RV::FOV podem ficar el float que és el angle del Frustum.
+								 //	  ( FOV   , Aspect Ratio              , Pla Near , Pla Far );
+
+	// ORTHONORMAL PROJECTION:
+	//float scale = 50.f;
+	//RV::_projection = glm::ortho(-(float)width / scale, (float)width / scale, -(float)height / scale, (float) height / scale, RV::zNear, RV::zFar);
 
 	// Setup shaders & geometry
-	/*Box::setupCube();
+	Box::setupCube();
 	Axis::setupAxis();
-	Cube::setupCube();*/
+	//Cube::setupCube();
 
 	//MyFirstShader::myInitCode();
 	Cube::setupCube();
@@ -125,20 +130,27 @@ void GLcleanup() {
 	Cube::cleanupCube();
 }
 
+float ramp = 0;
+glm::vec3 moveCubePos;
+
 void GLrender(double currentTime) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	RV::_modelView = glm::mat4(1.f);
-	RV::_modelView = glm::translate(RV::_modelView, glm::vec3(RV::panv[0], RV::panv[1], RV::panv[2]));
+	//RV::_modelView = glm::translate(RV::_modelView, glm::vec3(RV::panv[0], RV::panv[1], RV::panv[2]));
+	ramp += 0.1f;
+	if (ramp > 10) { ramp = 0; }
+	RV::_modelView = glm::translate(RV::_modelView, glm::vec3(ramp, RV::panv[1], RV::panv[2]));
 	RV::_modelView = glm::rotate(RV::_modelView, RV::rota[1], glm::vec3(1.f, 0.f, 0.f));
-	RV::_modelView = glm::rotate(RV::_modelView, RV::rota[0], glm::vec3(0.f, 1.f, 0.f));
-
+	//RV::_modelView = glm::rotate(RV::_modelView, RV::rota[0], glm::vec3(0.f, 1.f, 0.f));
+	RV::_modelView = glm::lookAt(glm::vec3(0.f, 2.f, 10.f), moveCubePos, glm::vec3(0.f, 1.f, 0.f));
 	RV::_MVP = RV::_projection * RV::_modelView;
 
 	// render code
-	/*Box::drawCube();
+	Box::drawCube();
 	Axis::drawAxis();
-	Cube::drawCube();*/
+	//Cube::drawCube();
+	Cube::draw2Cubes(currentTime);
 
 	//const GLfloat color[] = { (float)sin(currentTime)*0.5 + 0.5, (float)cos(currentTime)*0.5 + 0.5, 0.0f, 1.0f };
 	// Si volem que la targeta gràfica faci coses, hem de ficar-les en els seus buffers.
@@ -1001,6 +1013,45 @@ void main() {\n\
 		glDisable(GL_PRIMITIVE_RESTART);
 	}
 
+	void draw2Cubes(double currentTime) {
+		glEnable(GL_PRIMITIVE_RESTART);
+		glBindVertexArray(cubeVao);
+		glUseProgram(cubeProgram);
+
+		glm::mat4 t = glm::translate(glm::mat4(), glm::vec3(-3.0f, 2.0f, 3.0f));
+		objMat = t;
+		glUniformMatrix4fv(glGetUniformLocation(cubeProgram, "objMat"), 1, GL_FALSE, glm::value_ptr(objMat));
+		glUniformMatrix4fv(glGetUniformLocation(cubeProgram, "mv_Mat"), 1, GL_FALSE, glm::value_ptr(RenderVars::_modelView));
+		glUniformMatrix4fv(glGetUniformLocation(cubeProgram, "mvpMat"), 1, GL_FALSE, glm::value_ptr(RenderVars::_MVP));
+		glUniform4f(glGetUniformLocation(cubeProgram, "color"), 0.1f, 1.f, 1.f, 0.f);
+		glDrawElements(GL_TRIANGLE_STRIP, numVerts, GL_UNSIGNED_BYTE, 0);
+
+		float red = 0.5f + 0.5f*sin(3.f*currentTime);
+
+		glm::mat4 t2 = glm::translate(glm::mat4(), glm::vec3(1.0f, 0.f, 3.0f));
+
+		float size = 1.0f; //1.5f + 0.5f * sin(3.f * currentTime);
+
+		glm::mat4 s = glm::scale(glm::mat4(), glm::vec3(size, size, size));
+		glm::mat4 r = glm::rotate(glm::mat4(), 2.f*(float)sin(3.f*currentTime), glm::vec3(0.f, 1.f, 0.f));
+		//objMat = t*r*(t2)*s;
+
+		moveCubePos = glm::vec3(ramp, 2.f, 0.f);
+
+		glm::mat4 t3 = glm::translate(glm::mat4(), moveCubePos);
+
+		objMat = t3;
+
+		glUniformMatrix4fv(glGetUniformLocation(cubeProgram, "objMat"), 1, GL_FALSE, glm::value_ptr(objMat));
+		
+		glUniform4f(glGetUniformLocation(cubeProgram, "color"), red, 0.f, 0.f, 0.f);
+		glDrawElements(GL_TRIANGLE_STRIP, numVerts, GL_UNSIGNED_BYTE, 0);
+		glUseProgram(0);
+		glBindVertexArray(0);
+		glDisable(GL_PRIMITIVE_RESTART);
+
+
+	}
 
 }
 
