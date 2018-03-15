@@ -130,43 +130,25 @@ void GLcleanup() {
 	Cube::cleanupCube();
 }
 
-float ramp = 0;
-glm::vec3 moveCubePos;
-
 void GLrender(double currentTime) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	RV::_modelView = glm::mat4(1.f);
-	//RV::_modelView = glm::translate(RV::_modelView, glm::vec3(RV::panv[0], RV::panv[1], RV::panv[2]));
-	ramp += 0.1f;
-	if (ramp > 10) { ramp = 0; }
-	RV::_modelView = glm::translate(RV::_modelView, glm::vec3(ramp, RV::panv[1], RV::panv[2]));
+	RV::_modelView = glm::translate(RV::_modelView, glm::vec3(0, RV::panv[1], RV::panv[2]));
 	RV::_modelView = glm::rotate(RV::_modelView, RV::rota[1], glm::vec3(1.f, 0.f, 0.f));
-	//RV::_modelView = glm::rotate(RV::_modelView, RV::rota[0], glm::vec3(0.f, 1.f, 0.f));
-	RV::_modelView = glm::lookAt(glm::vec3(0.f, 2.f, 10.f), moveCubePos, glm::vec3(0.f, 1.f, 0.f));
 	RV::_MVP = RV::_projection * RV::_modelView;
 
 	// render code
 	Box::drawCube();
 	Axis::drawAxis();
 	//Cube::drawCube();
-	Cube::draw2Cubes(currentTime);
-
-	//const GLfloat color[] = { (float)sin(currentTime)*0.5 + 0.5, (float)cos(currentTime)*0.5 + 0.5, 0.0f, 1.0f };
-	// Si volem que la targeta gràfica faci coses, hem de ficar-les en els seus buffers.
-	//glClearBufferfv(GL_COLOR, 0, color);	// El buffer GL_COLOR volem que tingui el valor 'red'.
-	/* void glClearBufferfv(GL_ENUM buffer, GLint drawBuffer, const GLfloat * value);
-		- f i v volen dir: float i vector (que per defecte és de 4).
-			-> això és degut a que OpenGL és semblant a C, però no té punters. A més no té funcions que tinguin diferents definicions però el mateix nom.
-		- buffer defineix el tipus de buffer.
-		- drawBuffer defineix quin buffer del tipus definit volem (si només en gastem un, doncs 0).
-		- value (float o vector)
-	*/
-
+	//Cube::draw2Cubes(currentTime);
+	
 	//glPointSize(40.0f);
 
-	//MyFirstShader::myRenderCode(currentTime);
-	Cube::drawCube();
+	MyFirstShader::myRenderCode(currentTime);
+
+	//Cube::drawCube();
 
 	ImGui::Render();
 }
@@ -1036,11 +1018,11 @@ void main() {\n\
 		glm::mat4 r = glm::rotate(glm::mat4(), 2.f*(float)sin(3.f*currentTime), glm::vec3(0.f, 1.f, 0.f));
 		//objMat = t*r*(t2)*s;
 
-		moveCubePos = glm::vec3(ramp, 2.f, 0.f);
+		//moveCubePos = glm::vec3(0.f, 2.f, 0.f);
 
-		glm::mat4 t3 = glm::translate(glm::mat4(), moveCubePos);
+		//glm::mat4 t3 = glm::translate(glm::mat4(), moveCubePos);
 
-		objMat = t3;
+		objMat = t2;
 
 		glUniformMatrix4fv(glGetUniformLocation(cubeProgram, "objMat"), 1, GL_FALSE, glm::value_ptr(objMat));
 		
@@ -1061,14 +1043,14 @@ namespace MyFirstShader {
 
 	static const GLchar * vertex_shader_source[] =	// Atenció: segons l'ordre que definim els punts, definim la normal del triangle (sempre en sentit anti-horari per a veure).
 	{
-		"#version 330\n\
-		 \n\
-		 void main(){ \n\
-			const vec4 vertices[3] = vec4[3](vec4( 0.25, -0.25, 0.5, 1.0),\n\
-											vec4( 0.25, 0.25, 0.5, 1.0),\n\
-											vec4( -0.25,  -0.25, 0.5, 1.0));\n\
-			gl_Position = vertices[gl_VertexID];\n\
-		 }"
+		"#version 330										\n\
+		\n\
+		void main() {\n\
+		const vec4 vertices[3] = vec4[3](vec4( 0.25, -0.25, 0.5, 1.0),\n\
+									   vec4(0.25, 0.25, 0.5, 1.0),\n\
+										vec4( -0.25,  -0.25, 0.5, 1.0));\n\
+		gl_Position = vertices[gl_VertexID];\n\
+		}"
 	};
 
 	static const GLchar * fragment_shader_source[] =
